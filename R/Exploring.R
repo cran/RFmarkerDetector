@@ -78,6 +78,7 @@ pca <- function(X, autoscale = T, exclude = T) {
 #' eventually it will be specified the name of the samples
 #' @method plot pca.scores
 #' @details The Scores plot is used for interpreting relations among the observations
+#' @importFrom graphics abline grid legend points
 #' @examples
 #' ## data(cachexiaData)
 #' ## pca_obj <- pca(cachexiaData, autoscale = TRUE, exclude = TRUE) 
@@ -89,7 +90,8 @@ plot.pca.scores <- function(pca_obj, dataset, xrange, yrange) {
     variances <- pca_obj$variances
     classes <- pca_obj$classes
     
-    plot(scores[, 1:2], type = "n", xlab = paste("PC 1 (", variances[1], "%)", sep = ""), ylab = paste("PC 2 (", variances[2], "%)", sep = ""))
+    plot(scores[, 1:2], type = "n", xlab = paste("PC 1 (", variances[1], "%)", sep = ""), ylab = paste("PC 2 (", variances[2], 
+        "%)", sep = ""))
     
     abline(h = 0, v = 0, col = "darkgrey")
     grid()
@@ -168,6 +170,7 @@ plot.pca.scores <- function(pca_obj, dataset, xrange, yrange) {
 #' @param nvar the number of variables to plot
 #' @param ... optional graphical parameters
 #' @method plot pca.loadings
+#' @importFrom graphics arrows
 #' @examples
 #' ## data(cachexiaData)
 #' ## pca_obj <- pca(cachexiaData, autoscale = TRUE, exclude = TRUE) 
@@ -227,7 +230,8 @@ plot.pca.loadings <- function(pca_obj, nvar) {
 #' @param ncomp the number of components to plot
 #' @details screplot generates 2 graphs that represent respectively the relative variances
 #' and the cumulative variances associated with the principal components
-#' @export 
+#' @importFrom graphics barplot
+#' @export
 #' @examples
 #' ## data(cachexiaData)
 #' ## pca_obj <- pca(cachexiaData, autoscale = TRUE, exclude = TRUE)
@@ -309,6 +313,7 @@ mds <- function(dataset, opt = list(ntree = 1000, mtry = round(sqrt(ncol(dataset
 #' After having calculated scaling coordinates, we can project the data onto a lower dimensional space, preserving
 #' (as much as possible) the distances between the orginal points.
 #' This plot can be useful for discovering patterns in data.
+#' @importFrom graphics par legend title text 
 #' @examples
 #' ## data(cachexiaData)
 #' ## params = list(ntree = 1000, mtry = round(sqrt(ncol(cachexiaData) -2)), seed = 1234)

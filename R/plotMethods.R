@@ -10,6 +10,7 @@
 #' @param auc_values an array with the auc values to plot
 #' @param num_of_variables the k dimension of each combination
 #' @param num_of_combinations the number of k combinations of the set of the input variables
+#' @importFrom graphics mtext
 #' @author Piergiorgio Palla
 
 plotAUCvsCombinations <- function(auc_values, num_of_variables, num_of_combinations) {
@@ -30,5 +31,4 @@ plotAUCvsCombinations <- function(auc_values, num_of_variables, num_of_combinati
     grid()
     
     
-}
- 
+} 

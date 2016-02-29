@@ -42,7 +42,7 @@ lqvarFilter <- function(data, threshold = 0.5, exclude = T) {
         
     }
     
-    if (!(idx == NULL || length(idx) == 0)) {
+    if (!(is.null(idx) || length(idx) == 0)) {
         excluded_vars <- names(input)[idx]
         filtered_input <- input[, -idx]
     } else {

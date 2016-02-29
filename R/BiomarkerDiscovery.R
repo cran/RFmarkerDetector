@@ -20,6 +20,7 @@
 #' @details Exploting the AUCRF algorithm, the fuction allows to identify the best performing 'parsimonious' model  
 #' in terms of OOB-AUC and the most relevant variables (metabolites) involved in the prediction task. 
 #' @import AUCRF
+#' @importFrom stats relevel sd
 #' @references Calle ML, Urrea V, Boulesteix A-L, Malats N (2011) 'AUC-RF: A new strategy for genomic pro-
 #' filing with Random Forest'. Human Heredity
 #' @export
@@ -30,8 +31,8 @@
 
 
 
-aucMCV <- function(data, seed = 1234, ref_level = levels(data[, 2])[1], auc_rank = "MDG", auc_ntree = 500, auc_nfolds = 5, auc_pdel = 0.2, auc_colour = "grey", 
-    auc_iterations = 5) {
+aucMCV <- function(data, seed = 1234, ref_level = levels(data[, 2])[1], auc_rank = "MDG", auc_ntree = 500, auc_nfolds = 5, 
+    auc_pdel = 0.2, auc_colour = "grey", auc_iterations = 5) {
     
     START <- proc.time()
     vip_measures <- c("MDA", "MDG")
@@ -104,8 +105,8 @@ aucMCV <- function(data, seed = 1234, ref_level = levels(data[, 2])[1], auc_rank
 #' 
 plotVarFreq <- function(varFrequency, thd = 0.4, color = "blue", hcol = "red") {
     
-    ##### Usually our vector will be a named vector in which the name of each element will be the var name To allow a comparision between different
-    ##### approaches we sort the names and thus the vector in alphabetical order
+    ##### Usually our vector will be a named vector in which the name of each element will be the var name To allow a comparision
+    ##### between different approaches we sort the names and thus the vector in alphabetical order
     
     if (!is.null(names(varFrequency))) {
         unordered_names <- names(varFrequency)
@@ -126,8 +127,8 @@ plotVarFreq <- function(varFrequency, thd = 0.4, color = "blue", hcol = "red") {
     
     par(mar = c(5, 5, 2, 2))
     
-    b = barplot(varFrequency * 100, col = cols, ylim = c(0, 105), names.arg = xarguments, ylab = "Candidate biomarker frequencies (%)", space = 0.7, 
-        cex.names = 0.75)
+    b = barplot(varFrequency * 100, col = cols, ylim = c(0, 105), names.arg = xarguments, ylab = "Candidate biomarker frequencies (%)", 
+        space = 0.7, cex.names = 0.75)
     idx = 1:length(varFrequency)
     lab = rep("", length(varFrequency))
     

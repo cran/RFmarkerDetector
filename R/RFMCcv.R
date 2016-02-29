@@ -9,19 +9,21 @@
 #' to be included in each test set
 #' @param opt_params a list of optional parameters characterizing both the model to be validated and the input dataset. 
 #' It may include parameters like the number of trees (ntree), the mtry, or the eventual reference class label (ref_level) of the dataset
+#' @importFrom WilcoxCV generate.split
+#' @export
 #' @return a list of three elements: \itemize{
 #' \item a n x p dataframe representing the predictions during the cross-validation process. Its number of lines is equal to the number of observations included in each test set
 #' and the number of columns is equal to the number of test sets (defined by the nsplits input parameter).
 #' \item a n x p dataframe representing the labels associated to the samples of each test set. Its number of lines n is equal to the number observations in each test set while p is the number of test sets defined by the nsplits input parameter 
 #' \item a list of p random forest models tested in the cross-validation process
 #'  }
-#'  @importFrom WilcoxCV generate.split
+#'  
 #'  @examples
 #'  data(cachexiaData)
 #'  params <- list(ntrees = 500, ref_level = levels(cachexiaData[,2])[1] )
 #'  mccv_obj <- rfMCCV(cachexiaData, nsplits = 5, test_prop = 1/3, opt_params = params)
-#'  @author Piergiorgio Palla
-#'  @export
+#' @author Piergiorgio Palla
+
 
 rfMCCV <- function(data, nsplits, test_prop, opt_params) {
     
@@ -56,8 +58,8 @@ rfMCCV <- function(data, nsplits, test_prop, opt_params) {
     
     ntest <- floor(test_prop * nrow(data))
     
-    ### test_index_matrix has nsplits x ntest elements. Each row contains the indexes of the observations of the original dataset included in one of
-    ### the test sets defined by the nsplits parameter.
+    ### test_index_matrix has nsplits x ntest elements. Each row contains the indexes of the observations of the original
+    ### dataset included in one of the test sets defined by the nsplits parameter.
     set.seed(1234)
     test.index.matrix <- generate.split(n = nrow(data), niter = nsplits, ntest = ntest)
     ### From this matrix we build the splits: training sets and test sets
@@ -72,8 +74,8 @@ rfMCCV <- function(data, nsplits, test_prop, opt_params) {
         indexes <- test.index.matrix[i, ]
         testset <- data[indexes, ]
         trainingset <- data[-indexes, ]
-        model <- randomForest::randomForest(x = trainingset[, 3:ncol(trainingset)], y = trainingset[, 2], xtest = testset[, 3:ncol(testset)], ytest = testset[, 
-            2], mtry = MTRY, ntree = NTREE)
+        model <- randomForest::randomForest(x = trainingset[, 3:ncol(trainingset)], y = trainingset[, 2], xtest = testset[, 
+            3:ncol(testset)], ytest = testset[, 2], mtry = MTRY, ntree = NTREE)
         
         predictions[, i] <- model$test$votes[, 2]
         labels[, i] <- testset[, 2]
@@ -181,11 +183,12 @@ forestPerformance <- function(cm) {
     
     # sprintf('Accuracy: %.2f%%' , accuracy*100)
     
-    #### The precision for a class is the number of TP (i.e. the number of items correctly labeled as belonging to that class) divided by the total
-    #### number of elements labeled as belonging to that class (i.e. the sum of TP and FP, which are items incorrectly labeled as belonging to that
-    #### class)
+    #### The precision for a class is the number of TP (i.e. the number of items correctly labeled as belonging to that class)
+    #### divided by the total number of elements labeled as belonging to that class (i.e. the sum of TP and FP, which are items
+    #### incorrectly labeled as belonging to that class)
     
-    # ## 1st class Precision precision1 <- (cm[1,1] / (cm[1,1] + c[2,1]))*100 ## 2nd class Precision precision2 <- (cm[2,2] / c[2,2] + c[1,2])* 100
+    # ## 1st class Precision precision1 <- (cm[1,1] / (cm[1,1] + c[2,1]))*100 ## 2nd class Precision precision2 <- (cm[2,2] /
+    # c[2,2] + c[1,2])* 100
     
     return(c(accuracy, recall, cm))
     
@@ -195,11 +198,11 @@ forestPerformance <- function(cm) {
 #' 
 #' This function provides the average accuracy and the recall of a list of Random Forest models
 #' @param model_list a list of different Random Forest models
+#' @export
 #' @return a list of the two elements: \itemize{
 #' \item avg_accuracy the average accuracy
 #' \item avg_recall the average recall
 #' }
-#' @export
 #' @examples
 #' ## data(cachexiaData)
 #' ## params <- list(ntrees = 500, ref_level = levels(cachexiaData[,2])[1] )
@@ -217,9 +220,9 @@ rfMCCVPerf <- function(model_list) {
         
         if (!is.null(model_list[[i]]$test$confusion)) {
             # print(paste('model: ', i))
-            cm <- model_list[[i]]$test$confusion
+            cm <- model_list[[i]]$test$confusion[, 1:2]
         } else {
-            cm <- model_list[[i]]$confusion
+            cm <- model_list[[i]]$confusion[, 1:2]
         }
         
         tmp <- forestPerformance(cm)
@@ -241,6 +244,7 @@ rfMCCVPerf <- function(model_list) {
 #' @param predictions a vector, matrix, list, or data frame containing the predictions.
 #' @param labels a vector, matrix, list, or data frame containing the true class labels. It must have
 #' the same dimensions as predictions
+#' @importFrom methods slot
 #' @return the average AUC value
 #' @examples
 #' ## load a simple dataset with the vectors of the predictions and the labels resulting from a CV 
@@ -258,8 +262,8 @@ getAvgAUC <- function(predictions, labels) {
     ##### AUC ####
     auc <- ROCR::performance(pred, "auc")
     
-    ### AUC values are contained in a list enclapsulated in a slot of the object auc Here we get the slot and convert the list to an array to easily
-    ### manupulate values .
+    ### AUC values are contained in a list enclapsulated in a slot of the object auc Here we get the slot and convert the list
+    ### to an array to easily manupulate values .
     auc_values <- unlist(slot(auc, "y.values"))
     # print(auc_values)
     avg_auc <- round(mean(auc_values), 3)
@@ -298,6 +302,7 @@ getAvgAUC <- function(predictions, labels) {
 #' The models cross-validated will be compared considering the AUC of their averaged ROC curve.
 #' The function will return the best models, the maximum value of AUC and the most relevant input variables associated  
 #' @export
+#' @importFrom methods hasArg
 #' @examples
 #' ## data(cachexiaData)
 #' ## dataset <- cachexiaData[, 1:15]
@@ -370,8 +375,4 @@ getBestRFModel <- function(combinations, data, params) {
     
     return(list(auc = max_auc, biomarker_set = best_combination, best_model_set = best_model_set))
     
-}
-
-
-
- 
+} 

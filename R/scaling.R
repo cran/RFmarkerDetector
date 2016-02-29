@@ -107,5 +107,4 @@ meanCenter <- function(data, exclude = T) {
     # Here we perform mean centering
     x.sc <- scale(x, center = T, scale = F)
     x.sc <- cbind(sample_classes, x.sc)
-}
- 
+} 

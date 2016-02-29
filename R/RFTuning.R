@@ -159,8 +159,8 @@ tuneMTRY <- function(data, iterations, maxntree, mtry_length, changeTreeNum = F,
 
 optimizeMTRY <- function(oob_matrix) {
     
-    ## Here we initialize the vector that will contain the mean of each sample and the vector that will contain the interval estimate of the
-    ## 'population' (from which each sample has been drawn) mean.
+    ## Here we initialize the vector that will contain the mean of each sample and the vector that will contain the interval
+    ## estimate of the 'population' (from which each sample has been drawn) mean.
     
     mean_matrix = colMeans(oob_matrix)
     sd_matrix <- apply(oob_matrix, 2, sd)
@@ -171,9 +171,10 @@ optimizeMTRY <- function(oob_matrix) {
         
         ### sample standard deviation (denominator: n-1)
         stdev <- sd(sample)
-        ### The use of the z test requires the knowledge of the variance / standard deviation of the population.  In this case we do not know those
-        ### values, but for 'large' sample sizes (n > 30) the sample standard deviation is a good unbiased estimator of the corresponding parameter. This
-        ### way we can use the z-test to estimate our confidence intervals of the population mean oob errors. We can also use a one sample t-test.
+        ### The use of the z test requires the knowledge of the variance / standard deviation of the population.  In this case we do
+        ### not know those values, but for 'large' sample sizes (n > 30) the sample standard deviation is a good unbiased estimator
+        ### of the corresponding parameter. This way we can use the z-test to estimate our confidence intervals of the population
+        ### mean oob errors. We can also use a one sample t-test.
         
         ci <- UsingR::simple.z.test(sample, sigma = stdev, conf.level = 0.95)
         ci_matrix <- cbind(ci_matrix, ci)
@@ -255,8 +256,8 @@ tuneNTREE <- function(data, mtry, iterations, minNTREE = 500, pace = 100, seq_le
     cat("\n\nNumber of trees used to build each Random Forest model\n")
     cat(ntree_range, "\n")
     
-    ### Matrix with the distribution of the oob errors for each ntree value considered ### Its number of rows is equal to the number of models built
-    ### for each ntree value (i.e. iterations) ####
+    ### Matrix with the distribution of the oob errors for each ntree value considered ### Its number of rows is equal to the
+    ### number of models built for each ntree value (i.e. iterations) ####
     g <- global_oob
     
 }
@@ -275,7 +276,7 @@ tuneNTREE <- function(data, mtry, iterations, minNTREE = 500, pace = 100, seq_le
 #' ## res <- tuneMTRY(cachexiaData, iterations = 5, maxntree = 600, mtry_length = 10, graph = F)
 #' ## l <- optimizeMTRY(res$oob)
 #' ## plotOOBvsMTRY(l$mean_matrix, l$ci_matrix)
-#' @import ggplot2
+# @import ggplot2
 
 plotOOBvsMTRY <- function(mean_matrix, ci_matrix) {
     
@@ -289,16 +290,17 @@ plotOOBvsMTRY <- function(mean_matrix, ci_matrix) {
     U <- NULL
     
     df <- data.frame(mtry = mtry_vector, OOB.error = mean_matrix, U = ci_matrix[1, ], L = ci_matrix[2, ], min_mtry = min_mtry)
-    diagram <- ggplot2::ggplot(df, ggplot2::aes(mtry)) + ggplot2::geom_line(ggplot2::aes(y = OOB.error), colour = "blue") + ggplot2::geom_ribbon(ggplot2::aes(ymin = L, 
-        ymax = U), alpha = 0.2)
+    diagram <- ggplot2::ggplot(df, ggplot2::aes(mtry)) + ggplot2::geom_line(ggplot2::aes(y = OOB.error), colour = "blue") + 
+        ggplot2::geom_ribbon(ggplot2::aes(ymin = L, ymax = U), alpha = 0.2)
     
     
     # diagram <- diagram + #scale_x_discrete(limits=names(mean_matrix))
     
-    diagram <- diagram + ggplot2::geom_vline(ggplot2::aes(xintercept = min_mtry), colour = "#BB0000", linetype = "dashed") + ggplot2::ggtitle("Mtry Optimization")  #+ annotate('text', x=13, y=0, label=13)
+    diagram <- diagram + ggplot2::geom_vline(ggplot2::aes(xintercept = min_mtry), colour = "#BB0000", linetype = "dashed") + 
+        ggplot2::ggtitle("Mtry Optimization")  #+ annotate('text', x=13, y=0, label=13)
     diagram
     # diagram <- diagram + theme(plot.title = element_text(lineheight=.8, face='bold')) plot(df$x, df$M, col='black')
-    # polygon(c(df$x,rev(df$x)),c(df$L,rev(df$U)),col = 'grey75', border = FALSE) lines(df$x, df$F, lwd = 2) #add red lines on borders of polygon
-    # lines(df$x, df$U, col='red',lty=2) lines(df$x, df$L, col='red',lty=2)
+    # polygon(c(df$x,rev(df$x)),c(df$L,rev(df$U)),col = 'grey75', border = FALSE) lines(df$x, df$F, lwd = 2) #add red lines on
+    # borders of polygon lines(df$x, df$U, col='red',lty=2) lines(df$x, df$L, col='red',lty=2)
     
 } 
